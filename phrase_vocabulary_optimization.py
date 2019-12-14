@@ -39,6 +39,9 @@ import utils
 import numpy as np
 import scipy.sparse
 import tensorflow as tf
+import sys
+
+sys.setrecursionlimit(7000)
 
 FLAGS = flags.FLAGS
 
@@ -48,7 +51,7 @@ flags.DEFINE_string(
     'vocabulary is optimized (see `input_format` flag and utils.py for '
     'documentation).')
 flags.DEFINE_enum(
-    'input_format', None, ['wikisplit', 'discofuse'],
+    'input_format', None, ['wikisplit', 'discofuse', 'ria'],
     'Format which indicates how to parse the `input_file`. See utils.py for '
     'documentation on the different formats.')
 flags.DEFINE_integer(
@@ -182,13 +185,19 @@ def _added_token_counts(data_iterator, try_swapping, max_input_examples=10000):
   """
   phrase_counter = collections.Counter()
   num_examples = 0
+  too_long_texts_cnt = 0
   all_added_phrases = []
   for sources, target in data_iterator:
     if num_examples >= max_input_examples:
       break
     logging.log_every_n(logging.INFO, f'{num_examples} examples processed.',
                         1000)
-    added_phrases = _get_added_phrases(' '.join(sources), target)
+    try:
+      added_phrases = _get_added_phrases(' '.join(sources), target)
+    except:
+      print(len(utils.get_token_list(' '.join(sources).lower())))
+      too_long_texts_cnt += 1
+
     if try_swapping and len(sources) == 2:
       added_phrases_swap = _get_added_phrases(' '.join(sources[::-1]), target)
       # If we can align more and have to add less after swapping, we assume that
@@ -200,6 +209,7 @@ def _added_token_counts(data_iterator, try_swapping, max_input_examples=10000):
     all_added_phrases.append(added_phrases)
     num_examples += 1
   logging.info(f'{num_examples} examples processed.\n')
+  logging.info(f'{too_long_texts_cnt} too long examples.\n')
   return phrase_counter, all_added_phrases
 
 

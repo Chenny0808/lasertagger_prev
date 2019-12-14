@@ -22,9 +22,11 @@ from __future__ import division
 from __future__ import print_function
 
 import json
+from bs4 import BeautifulSoup
 from typing import Iterator, Mapping, Sequence, Text, Tuple
 
 import tensorflow as tf
+
 
 
 def get_token_list(text):
@@ -56,11 +58,28 @@ def yield_sources_and_targets(
     yield_example_fn = _yield_wikisplit_examples
   elif input_format == 'discofuse':
     yield_example_fn = _yield_discofuse_examples
+  elif input_format == 'ria':
+    yield_example_fn = _yield_ria_examples
   else:
     raise ValueError('Unsupported input_format: {}'.format(input_format))
 
   for sources, target in yield_example_fn(input_file):
     yield sources, target
+
+
+
+def _yield_ria_examples(input_file):
+  with open(input_file, "r", encoding="utf-8") as r:
+    for line in r:
+      data = json.loads(line.strip())
+      title = data["title"]
+      text = data["text"]
+      clean_text = BeautifulSoup(text, 'html.parser').text.replace('\xa0', ' ').replace('\n', ' ')
+      if not clean_text or not title:
+        continue
+      yield [clean_text], title
+
+
 
 
 def _yield_wikisplit_examples(
