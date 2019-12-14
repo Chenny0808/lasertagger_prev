@@ -192,9 +192,9 @@ def _added_token_counts(data_iterator, try_swapping, max_input_examples=10000):
       break
     logging.log_every_n(logging.INFO, f'{num_examples} examples processed.',
                         1000)
-    try:
+    if len(utils.get_token_list(' '.join(sources).lower())) < 1500:
       added_phrases = _get_added_phrases(' '.join(sources), target)
-    except:
+    else:
       print(len(utils.get_token_list(' '.join(sources).lower())))
       too_long_texts_cnt += 1
 
