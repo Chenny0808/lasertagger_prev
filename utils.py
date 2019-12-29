@@ -77,6 +77,7 @@ def _yield_ria_examples(input_file):
       clean_text = BeautifulSoup(text, 'html.parser').text.replace('\xa0', ' ').replace('\n', ' ')
       if len(clean_text) < 10 or not title:
         continue
+      clean_text = ' '.join(clean_text.split()[:32])
       yield [clean_text], title
 
 
