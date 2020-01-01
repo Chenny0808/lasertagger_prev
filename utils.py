@@ -90,6 +90,7 @@ def _yield_wikisplit_examples(
   with tf.io.gfile.GFile(input_file) as f:
     for line in f:
       source, target = line.rstrip('\n').split('\t')
+      source = ' '.join(source.split()[:64])
       yield [source], target
 
 
