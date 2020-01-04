@@ -59,9 +59,10 @@ def calc_metrics(refs, hyps):
 
 
 path = sys.argv[1]
-data = pd.read_csv(path, names=['text', 'pred', 'true'])
+data = pd.read_csv(path, sep='\t', names=['text', 'pred', 'true'])
+print(data.shape)
 data = data.dropna()
-
+print('Result:\n')
 refs = list(data['true'])
 hyps = list(data['pred'])
 
