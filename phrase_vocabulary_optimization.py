@@ -63,7 +63,7 @@ flags.DEFINE_string(
     'Path to the resulting file with all possible tags. Coverage numbers will '
     'be written to a separate file which has the same path but ".log" appended '
     'to it.')
-flags.DEFINE_bool('enable_swap_tag', True, 'Whether to enable the SWAP tag.')
+flags.DEFINE_bool('enable_swap_tag', False, 'Whether to enable the SWAP tag.')
 flags.DEFINE_integer('vocabulary_size', 500,
                      'Number of phrases to include in the vocabulary.')
 flags.DEFINE_integer(
@@ -193,10 +193,10 @@ def _added_token_counts(data_iterator, try_swapping, max_input_examples=10000):
     logging.log_every_n(logging.INFO, f'{num_examples} examples processed.',
                         1000)
 
-    if len(utils.get_token_list(' '.join(sources).lower())) < 2500:
-      added_phrases = _get_added_phrases(' '.join(sources), target)
-    else:
-      too_long_texts_cnt += 1
+    #if len(utils.get_token_list(' '.join(sources).lower())) < 2500:
+    added_phrases = _get_added_phrases(' '.join(sources), target)
+    #else:
+    #  too_long_texts_cnt += 1
 
     if try_swapping and len(sources) == 2:
       added_phrases_swap = _get_added_phrases(' '.join(sources[::-1]), target)

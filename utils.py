@@ -77,7 +77,7 @@ def _yield_ria_examples(input_file):
       clean_text = BeautifulSoup(text, 'html.parser').text.replace('\xa0', ' ').replace('\n', ' ')
       if len(clean_text) < 10 or not title:
         continue
-      clean_text = ' '.join(clean_text.split()[:32])
+      clean_text = ' '.join(clean_text.split()[:512])
       yield [clean_text], title
 
 
@@ -90,7 +90,7 @@ def _yield_wikisplit_examples(
   with tf.io.gfile.GFile(input_file) as f:
     for line in f:
       source, target = line.rstrip('\n').split('\t')
-      source = ' '.join(source.split()[:64])
+      source = ' '.join(source.split()[:512])
       yield [source], target
 
 

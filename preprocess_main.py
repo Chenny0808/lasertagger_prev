@@ -53,12 +53,12 @@ flags.DEFINE_string(
     'maps each possible tag to an ID, or a text file that has one tag per '
     'line.')
 flags.DEFINE_string('vocab_file', None, 'Path to the BERT vocabulary file.')
-flags.DEFINE_integer('max_seq_length', 128, 'Maximum sequence length.')
+flags.DEFINE_integer('max_seq_length', 512, 'Maximum sequence length.')
 flags.DEFINE_bool(
     'do_lower_case', False,
     'Whether to lower case the input text. Should be True for uncased '
     'models and False for cased models.')
-flags.DEFINE_bool('enable_swap_tag', True, 'Whether to enable the SWAP tag.')
+flags.DEFINE_bool('enable_swap_tag', False, 'Whether to enable the SWAP tag.')
 flags.DEFINE_bool(
     'output_arbitrary_targets_for_infeasible_examples', False,
     'Set this to True when preprocessing the development set. Determines '
