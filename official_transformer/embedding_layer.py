@@ -48,10 +48,10 @@ class EmbeddingSharedWeights(tf.compat.v1.layers.Layer):
     self.method = method
 
   def build(self, _):
-    with tf.variable_scope("embedding_and_softmax", reuse=tf.AUTO_REUSE):
+    with tf.compat.v1.variable_scope("embedding_and_softmax", reuse=tf.compat.v1.AUTO_REUSE):
       # Create and initialize weights. The random normal initializer was chosen
       # randomly, and works well.
-      self.shared_weights = tf.get_variable(
+      self.shared_weights = tf.compat.v1.get_variable(
           "weights", [self.vocab_size, self.hidden_size],
           initializer=tf.random_normal_initializer(
               0., self.hidden_size ** -0.5))
@@ -70,7 +70,7 @@ class EmbeddingSharedWeights(tf.compat.v1.layers.Layer):
     """
     with tf.name_scope("embedding"):
       # Create binary mask of size [batch_size, length]
-      mask = tf.to_float(tf.not_equal(x, 0))
+      mask = tf.compat.v1.to_float(tf.not_equal(x, 0))
 
       if self.method == "gather":
         embeddings = tf.gather(self.shared_weights, x)

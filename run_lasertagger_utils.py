@@ -129,7 +129,7 @@ class ModelFnBuilder(object):
           kernel_initializer=tf.truncated_normal_initializer(stddev=0.02),
           name="output_projection")
 
-    with tf.variable_scope("loss"):
+    with tf.compat.v1.variable_scope("loss"):
       loss = None
       per_example_loss = None
       if mode != tf.estimator.ModeKeys.PREDICT:
@@ -178,7 +178,7 @@ class ModelFnBuilder(object):
       (total_loss, per_example_loss, predictions) = self._create_model(
           mode, input_ids, input_mask, segment_ids, labels, labels_mask)
 
-      tvars = tf.trainable_variables()
+      tvars = tf.compat.v1.trainable_variables()
       initialized_variable_names = {}
       scaffold_fn = None
       if self._init_checkpoint:
@@ -192,7 +192,7 @@ class ModelFnBuilder(object):
 
           scaffold_fn = tpu_scaffold
         else:
-          tf.train.init_from_checkpoint(self._init_checkpoint, assignment_map)
+          tf.compat.v1.train.init_from_checkpoint(self._init_checkpoint, assignment_map)
 
       tf.compat.v1.logging.info("**** Trainable Variables ****")
       for var in tvars:
@@ -210,7 +210,7 @@ class ModelFnBuilder(object):
             total_loss, self._learning_rate, self._num_train_steps,
             self._num_warmup_steps, self._use_tpu)
 
-        output_spec = tf.contrib.tpu.TPUEstimatorSpec(
+        output_spec = tf.compat.v1.estimator.tpu.TPUEstimatorSpec(
             mode=mode,
             loss=total_loss,
             train_op=train_op,
@@ -234,13 +234,13 @@ class ModelFnBuilder(object):
 
         eval_metrics = (metric_fn,
                         [per_example_loss, labels, labels_mask, predictions])
-        output_spec = tf.contrib.tpu.TPUEstimatorSpec(
+        output_spec = tf.compat.v1.estimator.tpu.TPUEstimatorSpec(
             mode=mode,
             loss=total_loss,
             eval_metrics=eval_metrics,
             scaffold_fn=scaffold_fn)
       else:
-        output_spec = tf.contrib.tpu.TPUEstimatorSpec(
+        output_spec = tf.compat.v1.estimator.tpu.TPUEstimatorSpec(
             mode=mode, predictions={"pred": predictions},
             scaffold_fn=scaffold_fn)
       return output_spec

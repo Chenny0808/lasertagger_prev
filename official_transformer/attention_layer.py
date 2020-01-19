@@ -37,11 +37,11 @@ class Attention(tf.compat.v1.layers.Layer):
     self.train = train
 
     # Layers for linearly projecting the queries, keys, and values.
-    self.q_dense_layer = tf.layers.Dense(hidden_size, use_bias=False, name="q")
-    self.k_dense_layer = tf.layers.Dense(hidden_size, use_bias=False, name="k")
-    self.v_dense_layer = tf.layers.Dense(hidden_size, use_bias=False, name="v")
+    self.q_dense_layer = tf.keras.layers.Dense(hidden_size, use_bias=False, name="q")
+    self.k_dense_layer = tf.keras.layers.Dense(hidden_size, use_bias=False, name="k")
+    self.v_dense_layer = tf.keras.layers.Dense(hidden_size, use_bias=False, name="v")
 
-    self.output_dense_layer = tf.layers.Dense(hidden_size, use_bias=False,
+    self.output_dense_layer = tf.keras.layers.Dense(hidden_size, use_bias=False,
                                               name="output_transform")
 
   def split_heads(self, x):

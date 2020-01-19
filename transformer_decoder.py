@@ -77,9 +77,9 @@ class TransformerDecoder(transformer.Transformer):
     """
     # Variance scaling is used here because it seems to work in many problems.
     # Other reasonable initializers may also work just as well.
-    initializer = tf.variance_scaling_initializer(
+    initializer = tf.keras.initializers.VarianceScaling(
         self.params["initializer_gain"], mode="fan_avg", distribution="uniform")
-    with tf.variable_scope("Transformer", initializer=initializer):
+    with tf.compat.v1.variable_scope("Transformer", initializer=initializer):
       # Calculate attention bias for encoder self-attention and decoder
       # multi-headed attention layers.
       attention_bias = model_utils.get_padding_bias(inputs)
@@ -156,7 +156,7 @@ class DecoderStack(tf.compat.v1.layers.Layer):
           params["hidden_size"], params["filter_size"],
           params["relu_dropout"], train, params["allow_ffn_pad"])
 
-      proj_layer = tf.layers.Dense(
+      proj_layer = tf.keras.layers.Dense(
           params["hidden_size"], use_bias=True, name="proj_layer")
 
       self.layers.append([
@@ -201,11 +201,11 @@ class DecoderStack(tf.compat.v1.layers.Layer):
       # Run inputs through the sublayers.
       layer_name = "layer_%d" % n
       layer_cache = cache[layer_name] if cache is not None else None
-      with tf.variable_scope(layer_name):
-        with tf.variable_scope("self_attention"):
+      with tf.compat.v1.variable_scope(layer_name):
+        with tf.compat.v1.variable_scope("self_attention"):
           decoder_inputs = self_attention_layer(
               decoder_inputs, decoder_self_attention_bias, cache=layer_cache)
-        with tf.variable_scope("ffn"):
+        with tf.compat.v1.variable_scope("ffn"):
           decoder_inputs = feed_forward_network(decoder_inputs)
 
     return self.output_normalization(decoder_inputs)

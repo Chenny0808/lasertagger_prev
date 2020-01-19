@@ -33,9 +33,9 @@ class FeedFowardNetwork(tf.compat.v1.layers.Layer):
     self.train = train
     self.allow_pad = allow_pad
 
-    self.filter_dense_layer = tf.layers.Dense(
+    self.filter_dense_layer = tf.keras.layers.Dense(
         filter_size, use_bias=True, activation=tf.nn.relu, name="filter_layer")
-    self.output_dense_layer = tf.layers.Dense(
+    self.output_dense_layer = tf.keras.layers.Dense(
         hidden_size, use_bias=True, name="output_layer")
 
   def call(self, x, padding=None):
