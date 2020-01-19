@@ -157,9 +157,9 @@ class ModelFnBuilder(object):
     def model_fn(features, labels, mode, params):  # pylint: disable=unused-argument
       """The `model_fn` for TPUEstimator."""
 
-      tf.logging.info("*** Features ***")
+      tf.compat.v1.logging.info("*** Features ***")
       for name in sorted(features.keys()):
-        tf.logging.info("  name = %s, shape = %s", name, features[name].shape)
+        tf.compat.v1.logging.info("  name = %s, shape = %s", name, features[name].shape)
 
       input_ids = features["input_ids"]
       input_mask = features["input_mask"]
@@ -194,14 +194,14 @@ class ModelFnBuilder(object):
         else:
           tf.train.init_from_checkpoint(self._init_checkpoint, assignment_map)
 
-      tf.logging.info("**** Trainable Variables ****")
+      tf.compat.v1.logging.info("**** Trainable Variables ****")
       for var in tvars:
-        tf.logging.info("Initializing the model from: %s",
+        tf.compat.v1.logging.info("Initializing the model from: %s",
                         self._init_checkpoint)
         init_string = ""
         if var.name in initialized_variable_names:
           init_string = ", *INIT_FROM_CKPT*"
-        tf.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
+        tf.compat.v1.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
                         init_string)
 
       output_spec = None

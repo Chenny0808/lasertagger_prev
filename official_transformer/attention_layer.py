@@ -22,7 +22,7 @@ from __future__ import print_function
 import tensorflow as tf
 
 
-class Attention(tf.layers.Layer):
+class Attention(tf.compat.v1.layers.Layer):
   """Multi-headed attention layer."""
 
   def __init__(self, hidden_size, num_heads, attention_dropout, train):

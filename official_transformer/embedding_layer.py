@@ -24,7 +24,7 @@ import tensorflow as tf  # pylint: disable=g-bad-import-order
 from official_transformer import tpu as tpu_utils
 
 
-class EmbeddingSharedWeights(tf.layers.Layer):
+class EmbeddingSharedWeights(tf.compat.v1.layers.Layer):
   """Calculates input embeddings and pre-softmax linear with shared weights."""
 
   def __init__(self, vocab_size, hidden_size, method="gather"):

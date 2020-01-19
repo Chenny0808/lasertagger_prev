@@ -122,23 +122,23 @@ def file_based_input_fn_builder(input_file, max_seq_length,
   """Creates an `input_fn` closure to be passed to TPUEstimator."""
 
   name_to_features = {
-      "input_ids": tf.FixedLenFeature([max_seq_length], tf.int64),
-      "input_mask": tf.FixedLenFeature([max_seq_length], tf.int64),
-      "segment_ids": tf.FixedLenFeature([max_seq_length], tf.int64),
-      "labels": tf.FixedLenFeature([max_seq_length], tf.int64),
-      "labels_mask": tf.FixedLenFeature([max_seq_length], tf.int64),
+      "input_ids": tf.io.FixedLenFeature([max_seq_length], tf.int64),
+      "input_mask": tf.io.FixedLenFeature([max_seq_length], tf.int64),
+      "segment_ids": tf.io.FixedLenFeature([max_seq_length], tf.int64),
+      "labels": tf.io.FixedLenFeature([max_seq_length], tf.int64),
+      "labels_mask": tf.io.FixedLenFeature([max_seq_length], tf.int64),
   }
 
   def _decode_record(record, name_to_features):
     """Decodes a record to a TensorFlow example."""
-    example = tf.parse_single_example(record, name_to_features)
+    example = tf.io.parse_single_example(record, name_to_features)
 
     # tf.Example only supports tf.int64, but the TPU only supports tf.int32.
     # So cast all int64 to int32.
     for name in list(example.keys()):
       t = example[name]
       if t.dtype == tf.int64:
-        t = tf.to_int32(t)
+        t = tf.compat.v1.to_int32(t)
       example[name] = t
 
     return example
@@ -152,7 +152,7 @@ def file_based_input_fn_builder(input_file, max_seq_length,
       d = d.repeat()
       d = d.shuffle(buffer_size=100)
     d = d.apply(
-        tf.contrib.data.map_and_batch(
+        tf.data.experimental.map_and_batch(
             lambda record: _decode_record(record, name_to_features),
             batch_size=params["batch_size"],
             drop_remainder=drop_remainder))
@@ -179,7 +179,7 @@ def _calculate_steps(num_examples, batch_size, num_epochs, warmup_proportion=0):
 
 
 def main(_):
-  tf.logging.set_verbosity(tf.logging.INFO)
+  tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
 
   if not (FLAGS.do_train or FLAGS.do_eval or FLAGS.do_export):
     raise ValueError("At least one of `do_train`, `do_eval` or `do_export` must"
@@ -204,17 +204,17 @@ def main(_):
     tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
         FLAGS.tpu_name, zone=FLAGS.tpu_zone, project=FLAGS.gcp_project)
 
-  is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
-  run_config = tf.contrib.tpu.RunConfig(
+  is_per_host = tf.compat.v1.estimator.tpu.InputPipelineConfig.PER_HOST_V2
+  run_config = tf.compat.v1.estimator.tpu.RunConfig(
       cluster=tpu_cluster_resolver,
       master=FLAGS.master,
       model_dir=FLAGS.output_dir,
       save_checkpoints_steps=FLAGS.save_checkpoints_steps,
       keep_checkpoint_max=20,
-      tpu_config=tf.contrib.tpu.TPUConfig(
+      tpu_config=tf.compat.v1.estimator.tpu.TPUConfig(
           iterations_per_loop=FLAGS.iterations_per_loop,
           per_host_input_for_training=is_per_host,
-          eval_training_input_configuration=tf.contrib.tpu.InputPipelineConfig
+          eval_training_input_configuration=tf.compat.v1.estimator.tpu.InputPipelineConfig
           .SLICED))
 
   if FLAGS.do_train:
@@ -237,7 +237,7 @@ def main(_):
 
   # If TPU is not available, this will fall back to normal Estimator on CPU
   # or GPU.
-  estimator = tf.contrib.tpu.TPUEstimator(
+  estimator = tf.compat.v1.estimator.tpu.TPUEstimator(
       use_tpu=FLAGS.use_tpu,
       model_fn=model_fn,
       config=run_config,
@@ -276,10 +276,10 @@ def main(_):
       result = estimator.evaluate(input_fn=eval_input_fn, checkpoint_path=ckpt,
                                   steps=eval_steps)
       for key in sorted(result):
-        tf.logging.info("  %s = %s", key, str(result[key]))
+        tf.compat.v1.logging.info("  %s = %s", key, str(result[key]))
 
   if FLAGS.do_export:
-    tf.logging.info("Exporting the model...")
+    tf.compat.v1.logging.info("Exporting the model...")
     def serving_input_fn():
       def _input_fn():
         features = {
@@ -300,4 +300,4 @@ def main(_):
 if __name__ == "__main__":
   flags.mark_flag_as_required("model_config_file")
   flags.mark_flag_as_required("label_map_file")
-  tf.app.run()
+  tf.compat.v1.app.run()

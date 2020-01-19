@@ -136,7 +136,7 @@ class TransformerDecoder(transformer.Transformer):
     return symbols_to_logits_fn
 
 
-class DecoderStack(tf.layers.Layer):
+class DecoderStack(tf.compat.v1.layers.Layer):
   """Modified Transformer decoder stack.
 
   Like the standard Transformer decoder stack but:
