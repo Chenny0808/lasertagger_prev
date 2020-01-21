@@ -58,7 +58,7 @@ flags.DEFINE_string(
     "exporting, one can optionally provide path to a particular checkpoint to "
     "be exported here.")
 flags.DEFINE_integer(
-    "max_seq_length", 512,
+    "max_seq_length", 256,
     "The maximum total input sequence length after WordPiece tokenization. "
     "Sequences longer than this will be truncated, and sequences shorter than "
     "this will be padded.")
@@ -283,9 +283,9 @@ def main(_):
     def serving_input_fn():
       def _input_fn():
         features = {
-            "input_ids": tf.placeholder(tf.int64, [None, None]),
-            "input_mask": tf.placeholder(tf.int64, [None, None]),
-            "segment_ids": tf.placeholder(tf.int64, [None, None]),
+            "input_ids": tf.compat.v1.placeholder(tf.int64, [None, None]),
+            "input_mask": tf.compat.v1.placeholder(tf.int64, [None, None]),
+            "segment_ids": tf.compat.v1.placeholder(tf.int64, [None, None]),
         }
         return tf.estimator.export.ServingInputReceiver(
             features=features, receiver_tensors=features)
